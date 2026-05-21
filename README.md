@@ -4,6 +4,21 @@
 
 > 📖 **[Быстрый старт →](./QUICKSTART.md)** | **[Подробная инструкция →](./SETUP.md)**
 
+## ⚠️ ВАЖНО: Настройка переменных окружения
+
+Перед запуском создайте файлы с переменными окружения:
+
+1. Скопируйте `.env.example` в корне проекта
+2. Создайте `.env` в корне и заполните:
+```bash
+DATABASE_URL="your_neon_database_url"
+JWT_SECRET="your_jwt_secret"
+JWT_REFRESH_SECRET="your_refresh_secret"
+```
+
+3. Создайте `backend/.env` из `backend/.env.example`
+4. Создайте `frontend/.env.local` из `frontend/.env.local.example`
+
 ## Технологический стек
 
 ### Frontend
