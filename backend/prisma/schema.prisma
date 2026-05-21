@@ -1,0 +1,208 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Пользователи системы ───────────────────────────────────────────────────
+
+enum SystemUserRole {
+  ADMIN
+  OPERATOR
+  VIEWER
+}
+
+model SystemUser {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  passwordHash String
+  fullName     String
+  role         SystemUserRole @default(OPERATOR)
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  auditLogs     AuditLog[]
+  refreshTokens RefreshToken[]
+
+  @@map("system_users")
+}
+
+model RefreshToken {
+  id        String     @id @default(uuid())
+  token     String     @unique
+  userId    String
+  user      SystemUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime   @default(now())
+
+  @@map("refresh_tokens")
+}
+
+// ─── Клиенты банка ──────────────────────────────────────────────────────────
+
+enum ClientStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum KycStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model Client {
+  id          String       @id @default(uuid())
+  firstName   String
+  lastName    String
+  middleName  String?
+  dateOfBirth DateTime     @db.Date
+  email       String       @unique
+  phone       String       @unique
+  address     String?
+  status      ClientStatus @default(ACTIVE)
+  kycStatus   KycStatus    @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  accounts Account[]
+
+  @@map("clients")
+}
+
+// ─── Счета ──────────────────────────────────────────────────────────────────
+
+enum AccountType {
+  CURRENT
+  SAVINGS
+  CREDIT
+  DEPOSIT
+}
+
+enum AccountStatus {
+  ACTIVE
+  FROZEN
+  CLOSED
+}
+
+enum Currency {
+  USD
+  EUR
+  RUB
+  KGS
+}
+
+model Account {
+  id            String        @id @default(uuid())
+  accountNumber String        @unique
+  clientId      String
+  client        Client        @relation(fields: [clientId], references: [id])
+  type          AccountType
+  status        AccountStatus @default(ACTIVE)
+  currency      Currency      @default(USD)
+  balance       Decimal       @db.Decimal(18, 2) @default(0)
+  creditLimit   Decimal?      @db.Decimal(18, 2)
+  openedAt      DateTime      @default(now())
+  closedAt      DateTime?
+  updatedAt     DateTime      @updatedAt
+
+  transactionsFrom Transaction[] @relation("FromAccount")
+  transactionsTo   Transaction[] @relation("ToAccount")
+
+  @@index([clientId])
+  @@index([accountNumber])
+  @@map("accounts")
+}
+
+// ─── Транзакции ─────────────────────────────────────────────────────────────
+
+enum TransactionType {
+  DEBIT
+  CREDIT
+  TRANSFER
+  FEE
+  REVERSAL
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REVERSED
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  referenceNumber String            @unique @default(cuid())
+  type            TransactionType
+  status          TransactionStatus @default(PENDING)
+  amount          Decimal           @db.Decimal(18, 2)
+  currency        Currency
+  description     String?
+  fromAccountId   String?
+  fromAccount     Account?          @relation("FromAccount", fields: [fromAccountId], references: [id])
+  toAccountId     String?
+  toAccount       Account?          @relation("ToAccount", fields: [toAccountId], references: [id])
+  reversedById    String?           @unique
+  reversedBy      Transaction?      @relation("Reversal", fields: [reversedById], references: [id])
+  reversal        Transaction?      @relation("Reversal")
+  metadata        Json?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([fromAccountId])
+  @@index([toAccountId])
+  @@index([createdAt])
+  @@index([status])
+  @@map("transactions")
+}
+
+// ─── Аудит ──────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String     @id @default(uuid())
+  userId    String
+  user      SystemUser @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String?
+  oldValue  Json?
+  newValue  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime   @default(now())
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ─── Уведомления ────────────────────────────────────────────────────────────
+
+enum NotificationType {
+  LARGE_TRANSACTION
+  ACCOUNT_BLOCKED
+  NEW_CLIENT
+  SYSTEM_ALERT
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  type      NotificationType
+  title     String
+  message   String
+  entityId  String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([isRead])
+  @@map("notifications")
+}

@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-text-primary;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  /* Dark theme (default) */
+  .dark {
+    --color-background: #0F1117;
+    --color-surface: #161B27;
+    --color-border: #1E2535;
+    --color-text-primary: #F1F5F9;
+  }
+
+  /* Light theme */
+  :root:not(.dark) {
+    --color-background: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-border: #E2E8F0;
+    --color-text-primary: #0F172A;
+  }
+
+  .dark .bg-background {
+    background-color: #0F1117;
+  }
+
+  :root:not(.dark) .bg-background {
+    background-color: #F8FAFC;
+  }
+
+  .dark .bg-surface {
+    background-color: #161B27;
+  }
+
+  :root:not(.dark) .bg-surface {
+    background-color: #FFFFFF;
+  }
+
+  .dark .border-border {
+    border-color: #1E2535;
+  }
+
+  :root:not(.dark) .border-border {
+    border-color: #E2E8F0;
+  }
+
+  .dark .text-text-primary {
+    color: #F1F5F9;
+  }
+
+  :root:not(.dark) .text-text-primary {
+    color: #0F172A;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-background rounded-lg;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-lg hover:bg-text-secondary;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #1E2535;
+  }
+
+  :root:not(.dark) .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #CBD5E1;
+  }
+}
