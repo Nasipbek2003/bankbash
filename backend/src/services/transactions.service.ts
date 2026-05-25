@@ -1,6 +1,6 @@
 import { prisma } from '../config/database';
 import { NotFoundError, BadRequestError } from '../utils/errors';
-import { TransactionType, TransactionStatus, Currency } from '@prisma/client';
+import { TransactionType, TransactionStatus } from '@prisma/client';
 
 export class TransactionsService {
   async getTransactions(params: {

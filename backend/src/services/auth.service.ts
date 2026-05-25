@@ -54,7 +54,7 @@ export class AuthService {
 
   async refresh(refreshToken: string) {
     try {
-      const payload = verifyRefreshToken(refreshToken);
+      verifyRefreshToken(refreshToken);
 
       // Проверяем наличие токена в БД
       const storedToken = await prisma.refreshToken.findUnique({

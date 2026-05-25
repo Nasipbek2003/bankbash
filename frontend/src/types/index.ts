@@ -1,4 +1,4 @@
-export type SystemUserRole = 'ADMIN' | 'OPERATOR' | 'VIEWER';
+export type SystemUserRole = 'ADMIN' | 'OPERATOR';
 
 export interface SystemUser {
   id: string;

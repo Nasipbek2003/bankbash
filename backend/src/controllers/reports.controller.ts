@@ -5,15 +5,16 @@ import { AuthRequest } from '../middleware/auth.middleware';
 const reportsService = new ReportsService();
 
 export class ReportsController {
-  async getTurnoverReport(req: AuthRequest, res: Response, next: NextFunction) {
+  async getTurnoverReport(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const { dateFrom, dateTo } = req.query;
 
       if (!dateFrom || !dateTo) {
-        return res.status(400).json({
+        res.status(400).json({
           status: 'error',
           message: 'dateFrom and dateTo are required',
         });
+        return;
       }
 
       const report = await reportsService.getTurnoverReport(
@@ -30,15 +31,16 @@ export class ReportsController {
     }
   }
 
-  async getNewClientsReport(req: AuthRequest, res: Response, next: NextFunction) {
+  async getNewClientsReport(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const { dateFrom, dateTo } = req.query;
 
       if (!dateFrom || !dateTo) {
-        return res.status(400).json({
+        res.status(400).json({
           status: 'error',
           message: 'dateFrom and dateTo are required',
         });
+        return;
       }
 
       const report = await reportsService.getNewClientsReport(
@@ -55,7 +57,7 @@ export class ReportsController {
     }
   }
 
-  async getAccountsSummary(req: AuthRequest, res: Response, next: NextFunction) {
+  async getAccountsSummary(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const summary = await reportsService.getAccountsSummary();
 
@@ -68,7 +70,7 @@ export class ReportsController {
     }
   }
 
-  async getDashboardStats(req: AuthRequest, res: Response, next: NextFunction) {
+  async getDashboardStats(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const stats = await reportsService.getDashboardStats();
 

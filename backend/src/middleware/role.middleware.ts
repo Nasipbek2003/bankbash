@@ -3,7 +3,7 @@ import { AuthRequest } from './auth.middleware';
 import { ForbiddenError } from '../utils/errors';
 
 export const requireRole = (...allowedRoles: string[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction) => {
+  return (req: AuthRequest, _res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(new ForbiddenError('User not authenticated'));
     }

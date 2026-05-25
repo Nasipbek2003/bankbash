@@ -5,7 +5,7 @@ import { AuthRequest } from '../middleware/auth.middleware';
 const notificationsService = new NotificationsService();
 
 export class NotificationsController {
-  async getNotifications(req: AuthRequest, res: Response, next: NextFunction) {
+  async getNotifications(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const notifications = await notificationsService.getNotifications();
 

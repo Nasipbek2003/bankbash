@@ -11,6 +11,7 @@ import {
   Shield,
   Settings2,
   LogOut,
+  UserCog,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,7 @@ const navigation = [
   { name: 'Транзакции', href: '/dashboard/transactions', icon: ArrowLeftRight },
   { name: 'Отчёты', href: '/dashboard/reports', icon: BarChart3 },
   { name: 'Аудит', href: '/dashboard/audit', icon: Shield },
+  { name: 'Операторы', href: '/dashboard/operators', icon: UserCog, adminOnly: true },
   { name: 'Настройки', href: '/dashboard/settings', icon: Settings2 },
 ];
 
@@ -49,6 +51,11 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {navigation.map((item) => {
+          // Скрываем пункты только для админа, если пользователь не админ
+          if (item.adminOnly && user?.role !== 'ADMIN') {
+            return null;
+          }
+
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           const Icon = item.icon;
 

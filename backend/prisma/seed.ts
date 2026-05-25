@@ -9,7 +9,6 @@ async function main() {
   // Создание системных пользователей
   const adminPassword = await bcrypt.hash('admin123', 12);
   const operatorPassword = await bcrypt.hash('operator123', 12);
-  const viewerPassword = await bcrypt.hash('viewer123', 12);
 
   const admin = await prisma.systemUser.upsert({
     where: { email: 'admin@bankdash.com' },
@@ -40,22 +39,6 @@ async function main() {
       passwordHash: operatorPassword,
       fullName: 'Мария Операторова',
       role: 'OPERATOR',
-    },
-  });
-
-  const viewer = await prisma.systemUser.upsert({
-    where: { email: 'viewer@bankdash.com' },
-    update: {
-      passwordHash: viewerPassword,
-      fullName: 'Петр Просмотров',
-      role: 'VIEWER',
-      isActive: true,
-    },
-    create: {
-      email: 'viewer@bankdash.com',
-      passwordHash: viewerPassword,
-      fullName: 'Петр Просмотров',
-      role: 'VIEWER',
     },
   });
 
